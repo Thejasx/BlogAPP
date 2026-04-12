@@ -8,6 +8,7 @@ import ListBlog from './pages/admin/ListBlog'
 import AddBlog from './pages/admin/AddBlog'
 import Comments from './pages/admin/Comments'
 import Login from './components/admin/Login'
+import 'quill/dist/quill.snow.css'
 
 
 
