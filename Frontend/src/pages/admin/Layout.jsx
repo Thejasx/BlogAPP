@@ -1,13 +1,16 @@
 import { assets } from '../../assets/assets'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/admin/Sidebar'
+import { useAppContext } from '../../context/AppContext'
 
 
 const Layout = () => {
 
+  const { setToken } = useAppContext()
   const navigate = useNavigate()
 
-  const logout = ()=>{
+  const logout = () => {
+    setToken(null)
     navigate('/')
   }
   return (

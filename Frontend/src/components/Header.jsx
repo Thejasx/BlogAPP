@@ -1,7 +1,12 @@
 import React from "react";
 import { assets } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
 
 const Header = () => {
+
+  const { setInput,input} = useAppContext()
+
+
   return (
     <div className="mx-8 sm:mx-16 xl:mx-24 relative">
       <div className="text-center mt-20 mb-8">
