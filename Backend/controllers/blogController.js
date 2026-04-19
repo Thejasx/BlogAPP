@@ -1,4 +1,3 @@
-import fs from 'fs'
 import imagekit from '../config/imageKit.js';
 import { toFile } from '@imagekit/nodejs';
 import Blog from '../models/Blog.js';
@@ -20,7 +19,7 @@ export const addBlog = async(req,res)=>{
 
         // upload image to imagekit
 
-        const fileBuffer = fs.readFileSync(imageFile.path)
+        const fileBuffer = imageFile.buffer;
         const file = await toFile(fileBuffer, imageFile.originalname)
         const response = await imagekit.files.upload({
             file : file,

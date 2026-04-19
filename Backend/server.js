@@ -13,6 +13,10 @@ app.use(cors())
 app.use(express.json())
 
 
+app.get('/', (req,res) => {
+    res.json({success: true, message: "Server is running successfully!"})
+})
+
 app.use('/api/admin',adminRoutes)
 app.use('/api/blog',blogRouter)
 
@@ -20,4 +24,8 @@ app.use('/api/blog',blogRouter)
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT,()=>{console.log(`server is running on port ${PORT}`)})
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT,()=>{console.log(`server is running on port ${PORT}`)})
+}
+
+export default app;
