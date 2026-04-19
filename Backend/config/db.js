@@ -1,15 +1,47 @@
 import mongoose from "mongoose";
 
-const connDb =async ()=>{
-    try {
-        mongoose.connection.on('connected', () => console.log('Database Connected'))
-        mongoose.connection.on('error', (err) => console.log(`Database Connection Error: ${err}`))
+// Cache the connection for serverless environments (Vercel)
+let cached = global.mongoose;
 
-        await mongoose.connect(`${process.env.MONGODB_URI}/blogApp`)
-        
-    } catch (error) {
-        console.log(`Database connection error: ${error.message}`)
-    }
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
 }
 
-export default connDb;
+const connDb = async () => {
+    // If already connected, return the cached connection
+    if (cached.conn) {
+        return cached.conn;
+    }
+
+    // If a connection is in progress, wait for it
+    if (!cached.promise) {
+        const opts = {
+            bufferCommands: false,  // Disable buffering so we get errors instead of timeouts
+            serverSelectionTimeoutMS: 10000,
+            socketTimeoutMS: 45000,
+        };
+
+        cached.promise = mongoose
+            .connect(`${process.env.MONGODB_URI}/blogApp`, opts)
+            .then((mongoose) => {
+                console.log("Database Connected");
+                return mongoose;
+            })
+            .catch((err) => {
+                cached.promise = null; // Reset so next request can retry
+                console.log(`Database connection error: ${err.message}`);
+                throw err;
+            });
+    }
+
+    try {
+        cached.conn = await cached.promise;
+    } catch (error) {
+        cached.promise = null;
+        throw error;
+    }
+
+    return cached.conn;
+};
+
+export default connDb;
