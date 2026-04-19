@@ -9,7 +9,11 @@ const BlogCard = ({blog}) => {
   return (
     <div onClick={() => navigate(`/blog/${_id}`)} className='w-full rounded-lg overflow-hidden shadow hover:scale-102 hover:shadow-primary/25 duration-300 cursor-pointer'>
         <img src={image} alt="" className='aspect-vedio' />
-        <span className='mb-5 mt-4 px-3 py-1 inline-block bg-primary/20 rounded-full text-primary text-x5'>{category}</span>
+        <span className='mb-5 mt-4 px-3 py-1 inline-block bg-primary/20 rounded-full text-primary text-x5 space-x-2'>
+          <span>{category}</span>
+          <span>•</span>
+          <span>{blog.commentCount || 0} Comments</span>
+        </span>
         <h3 className='mb-2 font-medium text-gray-900'>{title}</h3>
         <p className='mb-3 text-xs text-gray-600' dangerouslySetInnerHTML={{__html:description.slice(0,80)}}></p>
 

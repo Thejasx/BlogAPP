@@ -64,7 +64,7 @@ const Blog = () => {
   const addComment = async (e) => {
     e.preventDefault()
     try {
-      const {data} = await axios.post('/api/blog/add-comment',{blog : id},name,content)
+      const {data} = await axios.post('/api/blog/add-comment',{blog : id, name, content})
       if(data.success){
         toast.success(data.message)
         setName('')
@@ -140,9 +140,9 @@ const Blog = () => {
           <p className='font-semibold mb-4'>Add a Comment</p>
           <form onSubmit={addComment} className='flex flex-col items-start gap-4 max-w-lg'>
 
-            <input onChange={(e) => setName(e.target.value)} value={name} type='text' placeholder='Name' required ClassName='w-full p-2 border border-gray-300 rounded outline-none' />
+            <input onChange={(e) => setName(e.target.value)} value={name} type='text' placeholder='Name' required className='w-full p-2 border border-gray-300 rounded outline-none' />
 
-            <textarea onChange={(e) => setContent(e.target.value)} value={content} placeholder='Comment' ClassName='w-full p-2 border border-gray-300 rounded outline-none h-48'></textarea>
+            <textarea onChange={(e) => setContent(e.target.value)} value={content} placeholder='Comment' className='w-full p-2 border border-gray-300 rounded outline-none h-48'></textarea>
 
             <button
               type="submit"

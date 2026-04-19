@@ -57,7 +57,13 @@ export const addBlog = async(req,res)=>{
 export const getAllBlogs = async (req,res)=>{
     try {
         const blogs = await Blog.find({isPublished:true})
-        res.json({success:true,blogs})
+        
+        const blogsWithCommentCount = await Promise.all(blogs.map(async (blog) => {
+            const commentCount = await Comment.countDocuments({blog: blog._id, isApproved: true})
+            return {...blog._doc, commentCount}
+        }))
+
+        res.json({success:true,blogs: blogsWithCommentCount})
         
     } catch (error) {
          res.json({success:false,message:error.message})

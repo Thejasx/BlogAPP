@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 
 const AddBlog = () => {
 
-  const {axios} = useAppContext()
+  const {axios, navigate} = useAppContext()
   const [isAdding,setIsAdding] = useState(false)
 
   const editorRef = useRef(null)
@@ -41,6 +41,7 @@ const AddBlog = () => {
         setTitle('')
         quillRef.current.root.innerHTML = ''
         setCategory('Startup')
+        navigate('/admin/listBlog')
       }else{
         toast.error(data.message)
       }
