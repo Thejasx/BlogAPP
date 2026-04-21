@@ -16,6 +16,8 @@ export const AppProvider = ({children})=>{
 
 
     const [token, setToken] = useState(localStorage.getItem('token') || null)
+    const [userToken, setUserToken] = useState(localStorage.getItem('userToken') || null)
+    const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData')) || null)
     const [blogs, setBlogs] = useState([])
     const [input, setInput] = useState("")
 
@@ -40,17 +42,32 @@ export const AppProvider = ({children})=>{
     }, [])
 
     useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            localStorage.setItem('token', token);
+        const activeToken = token || userToken;
+        if (activeToken) {
+            axios.defaults.headers.common['Authorization'] = activeToken;
         } else {
             delete axios.defaults.headers.common['Authorization'];
+        }
+
+        if (token) {
+            localStorage.setItem('token', token);
+        } else {
             localStorage.removeItem('token');
         }
-    }, [token])
+    }, [token, userToken])
+
+    useEffect(() => {
+        if (userToken) {
+            localStorage.setItem('userToken', userToken);
+            if (userData) localStorage.setItem('userData', JSON.stringify(userData));
+        } else {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userData');
+        }
+    }, [userToken, userData])
 
     const value = {
-        axios, navigate, token, setToken, blogs, setBlogs, input, setInput
+        axios, navigate, token, setToken, userToken, setUserToken, userData, setUserData, blogs, setBlogs, input, setInput
     }
 
 

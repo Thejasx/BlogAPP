@@ -7,6 +7,9 @@ import Dashboard from './pages/admin/Dashboard'
 import ListBlog from './pages/admin/ListBlog'
 import AddBlog from './pages/admin/AddBlog'
 import Comments from './pages/admin/Comments'
+import PendingBlogs from './pages/admin/PendingBlogs'
+import UserLogin from './pages/UserLogin'
+import UserAddBlog from './pages/UserAddBlog'
 import Login from './components/admin/Login'
 import 'quill/dist/quill.snow.css'
 import {Toaster} from 'react-hot-toast'
@@ -22,12 +25,15 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/blog/:id' element={<Blog/>}/>
+        <Route path='/login' element={<UserLogin/>}/>
+        <Route path='/add-blog' element={<UserAddBlog/>}/>
 
         <Route path='/admin' element={ token ? <Layout/> : <Login/>}>
           <Route index element={<Dashboard/>}/>
           <Route path='listBlog' element={<ListBlog/>}/>
           <Route path='addBlog' element={<AddBlog/>}/>
           <Route path='comments' element={<Comments/>}/>
+          <Route path='pendingBlogs' element={<PendingBlogs/>}/>
         </Route>
 
       </Routes>

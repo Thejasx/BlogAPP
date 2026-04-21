@@ -7,7 +7,7 @@ export const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email + password, process.env.JWT_SECRET)
+            const token = jwt.sign({ email, isAdmin: true }, process.env.JWT_SECRET)
             res.json({ success: true, token })
         } else {
             res.json({ success: false, message: "Invalid credentials" })
@@ -50,12 +50,14 @@ export const getAllComments = async (req,res)=>{
 export const getDashboard = async(req,res)=>{
     try {
         const recentBlogs = await Blog.find({}).sort({createdAt: -1}).limit(5);
-        const blogs = await Blog.countDocuments()
-        const comments = await Comment.countDocuments()
-        const drafts = await Blog.countDocuments({isPublished: false})
+        const blogs = await Blog.countDocuments({isAdminApproved: true})
+        const comments = await Comment.countDocuments({isApproved: true})
+        const drafts = await Blog.countDocuments({isPublished: false, isAdminApproved: true})
+        const pendingBlogs = await Blog.countDocuments({isAdminApproved: false})
+        const pendingComments = await Comment.countDocuments({isApproved: false})
 
         const dashboardData = {
-            blogs,comments,drafts,recentBlogs
+            blogs,comments,drafts,recentBlogs,pendingBlogs,pendingComments
         }
 
         res.json({success:true,dashboardData})
@@ -64,6 +66,36 @@ export const getDashboard = async(req,res)=>{
 
         res.json({ success: false, message: error.message }) 
         
+    }
+}
+
+
+export const getPendingBlogs = async (req, res) => {
+    try {
+        const blogs = await Blog.find({ isAdminApproved: false }).sort({ createdAt: -1 })
+        res.json({ success: true, blogs })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export const approveBlog = async (req, res) => {
+    try {
+        const { id } = req.body;
+        await Blog.findByIdAndUpdate(id, { isAdminApproved: true, isPublished: true });
+        res.json({ success: true, message: "Blog approved successfully" })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export const rejectBlog = async (req, res) => {
+    try {
+        const { id } = req.body;
+        await Blog.findByIdAndDelete(id);
+        res.json({ success: true, message: "Blog rejected successfully" })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
     }
 }
 

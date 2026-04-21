@@ -3,6 +3,7 @@ import { toFile } from '@imagekit/nodejs';
 import Blog from '../models/Blog.js';
 import Comment from '../models/comment.js';
 import main from '../config/gemini.js';
+import User from '../models/User.js';
 
 
 export const addBlog = async(req,res)=>{
@@ -54,9 +55,60 @@ export const addBlog = async(req,res)=>{
 }
 
 
+export const userAddBlog = async(req,res)=>{
+
+    try {
+        const {title , subTitle , description ,category} = JSON.parse(req.body.blog)
+        const imageFile = req.file;
+
+        if(!title || !description || !category || !imageFile){
+            return res.json({success :false,message:"missing required fields"})
+        }
+
+        const user = await User.findById(req.userId);
+        const author = user ? user.name : "Unknown User";
+
+        const fileBuffer = imageFile.buffer;
+        const file = await toFile(fileBuffer, imageFile.originalname)
+        const response = await imagekit.files.upload({
+            file : file,
+            fileName : imageFile.originalname,
+            folder:"/blogs"
+        })
+
+        const optimizedImageUrl = imagekit.helper.buildSrc({
+            src: response.url,
+            transformation : [
+                {quality : 'auto'},
+                {format : 'webp'},
+                {width: '1280'}
+            ]
+        });
+
+        await Blog.create({
+            title,
+            subTitle,
+            description,
+            category,
+            image: optimizedImageUrl,
+            isPublished: false,
+            isAdminApproved: false,
+            author,
+            submittedBy: req.userId
+        })
+
+        res.json({success:true,message:'Blog submitted for admin approval'})
+        
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+
+}
+
+
 export const getAllBlogs = async (req,res)=>{
     try {
-        const blogs = await Blog.find({isPublished:true})
+        const blogs = await Blog.find({isPublished:true, isAdminApproved: { $ne: false }})
         
         const blogsWithCommentCount = await Promise.all(blogs.map(async (blog) => {
             const commentCount = await Comment.countDocuments({blog: blog._id, isApproved: true})

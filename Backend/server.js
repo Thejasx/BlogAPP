@@ -4,6 +4,7 @@ import cors from 'cors';
 import connDb from './config/db.js';
 import adminRoutes from './routes/adminRoutes.js';
 import blogRouter from './routes/blogRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
 const app = express()
 
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/admin', adminRoutes)
 app.use('/api/blog', blogRouter)
+app.use('/api/user', userRouter)
 
 const PORT = process.env.PORT || 3000;
 

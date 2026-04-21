@@ -22,7 +22,7 @@ const connDb = async () => {
         };
 
         cached.promise = mongoose
-            .connect(`${process.env.MONGODB_URI}/blogApp`, opts)
+            .connect(`${process.env.MONGODB_URI}`, opts)
             .then((mongoose) => {
                 console.log("Database Connected");
                 return mongoose;

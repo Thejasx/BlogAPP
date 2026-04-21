@@ -4,11 +4,13 @@ const auth = (req,res,next)=>{
     const token = req.headers.authorization;
 
     try {
-        jwt.verify(token,process.env.JWT_SECRET)
-        next()
+        const token_decode = jwt.verify(token, process.env.JWT_SECRET);
+        if (token_decode.isAdmin !== true) {
+            return res.json({ success: false, message: "Not Authorized. Login Again" });
+        }
+        next();
     } catch (error) {
-        res.json({success:false ,message:"invalid token"})
-        
+        res.json({ success: false, message: "Invalid or expired token" });
     }
 
 }

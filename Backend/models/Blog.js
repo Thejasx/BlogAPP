@@ -26,6 +26,18 @@ const blogSchema = mongoose.Schema({
         type : Boolean,
         required : true
     },
+    isAdminApproved : {
+        type : Boolean,
+        default : true
+    },
+    author : {
+        type : String,
+        default : "Admin"
+    },
+    submittedBy : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User'
+    }
 },{timestamps:true})
 
 
